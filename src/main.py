@@ -13,11 +13,11 @@ transforms = Transforms()
 model = BreakoutModel()
 optimizer = T.optim.Adam(model.parameters(), lr=3e-5)
 
-env = gym.make("ALE/Breakout-v5", render_mode="human")
+env = gym.make("ALE/Breakout-v5")
 
 LEARNING_RATE = 0.1
 DISCOUNT = 0.95
-EPISODES = 10
+EPISODES = 25_000
 SHOW_EVERY =  500
 
 LOW, HIGH = T.tensor(np.array([-1, -1]), requires_grad=False), T.tensor(np.array([1, 1]), requires_grad=False)
@@ -52,7 +52,7 @@ def get_discrete_states(state):
     return tuple(discrete_state.type(T.int8))
 
 
-for episode in tqdm(range(EPISODES)):
+for episode in range(EPISODES):
     state, info =  env.reset()
     state = Image.fromarray(np.uint8(state))
     state = transforms(state)
@@ -89,7 +89,7 @@ for episode in tqdm(range(EPISODES)):
         new_discrete_state = get_discrete_states(new_state)
         
         # if render:
-        env.render()
+        # env.render()
 
         if not done:
             # print(Q_TABLE[new_discrete_state])
@@ -130,9 +130,10 @@ for episode in tqdm(range(EPISODES)):
     # plt.legend(loc=4)
     # plt.show()
 
-    T.save(Q_TABLE, f'../q_tables/q_table_{episode}_{episode_reward}.pth')
+    T.save(Q_TABLE, f'../q_tables/q_table_{episode+1}_{episode_reward}.pth')
 
 import pickle
-pickle.dumps(aggr_ep_rewards, '../aggr_results.pkl')
+with open('../aggr.pickle', 'wb') as handle:
+    pickle.dump(aggr_ep_rewards, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 env.close()
