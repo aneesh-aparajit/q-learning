@@ -121,7 +121,7 @@ for episode in range(EPISODES):
     aggr_ep_rewards['max'].append(max(ep_rewards[-SHOW_EVERY:]))
 
     # if not episode % SHOW_EVERY:
-    print(f"Episode: {episode} | ep_reward: {episode_reward} | avg: {average_reward} | min: {min(ep_rewards[-SHOW_EVERY:])} | max: {max(ep_rewards[-SHOW_EVERY:])}")
+    print(f"Episode: {episode}\t| ep_reward: {episode_reward:3f}\t| avg: {average_reward:3f}\t| min: {min(ep_rewards[-SHOW_EVERY:]):.3f}\t| max: {max(ep_rewards[-SHOW_EVERY:]):.3f}")
 
     # plt.figure()
     # plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['avg'], label='avg')
