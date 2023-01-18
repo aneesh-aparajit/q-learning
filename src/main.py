@@ -16,7 +16,7 @@ optimizer = T.optim.Adam(model.parameters(), lr=3e-5)
 
 # LEARNING_RATE = 0.1
 # DISCOUNT = 0.95
-EPISODES = 8000
+EPISODES = 5000
 SHOW_EVERY =  500
 
 LOW, HIGH = T.tensor(np.array([-1, -1]), requires_grad=False), T.tensor(np.array([1, 1]), requires_grad=False)
@@ -55,6 +55,8 @@ def train_q_model(WIN_SIZE, LEARNING_RATE, DISCOUNT):
         'LEARNING_RATE': LEARNING_RATE, 
         'DISCOUNT': DISCOUNT
     }
+
+    BEST_SCORE = -1
 
     def get_discrete_states(state):
         discrete_state = (state - LOW) / DISCRETE_OBS_WINDOW_SIZE
@@ -138,9 +140,10 @@ def train_q_model(WIN_SIZE, LEARNING_RATE, DISCOUNT):
         # plt.plot(aggr_ep_rewards['ep'], aggr_ep_rewards['max'], label='max')
         # plt.legend(loc=4)
         # plt.show()
-
-        T.save(Q_TABLE, f'../q_tables/{WIN_SIZE}_{LEARNING_RATE}_{DISCOUNT}/q_table_{episode+1}_{episode_reward}.pth')
-
+        # print(type(episode_reward), type(BEST_SCORE))
+        if episode_reward  > BEST_SCORE:
+            T.save(Q_TABLE, f'../q_tables/{WIN_SIZE}_{LEARNING_RATE}_{DISCOUNT}/q_table_{episode_reward}.pth')
+            BEST_SCORE = episode_reward
     # import pickle
     # with open('../aggr.pickle', 'wb') as handle:
     #     pickle.dump(aggr_ep_rewards, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -151,21 +154,23 @@ def train_q_model(WIN_SIZE, LEARNING_RATE, DISCOUNT):
 
     return aggr_ep_rewards
 
-# EPSILON = [0.5, 0.6]
-WIN_SIZES = [10, 20, 30, 40, 50, 60]
-LEARNING_RATE = [0.1, 0.2, 0.3, 0.4, 0.5]
-DISCOUNTS = [0.99, 0.95, 0.9, 0.85, 0.8]
+
+if __name__ == '__main__':
+    # EPSILON = [0.5, 0.6]
+    WIN_SIZES = [10, 20, 30, 40, 50, 60]
+    LEARNING_RATE = [0.1, 0.2, 0.3, 0.4, 0.5]
+    DISCOUNTS = [0.99, 0.95, 0.9, 0.85, 0.8]
 
 
-results = {}
+    results = {}
 
-# for EPS in EPSILON:
-for WIN_SIZE in WIN_SIZES:
-    for LR in LEARNING_RATE:
-        for DISCOUNT in DISCOUNTS:
-            aggr_ep_rewards = train_q_model(WIN_SIZE=WIN_SIZE,  LEARNING_RATE=LR, DISCOUNT=DISCOUNT)
-            results[(WIN_SIZE, LR, DISCOUNT)] = aggr_ep_rewards
+    # for EPS in EPSILON:
+    for WIN_SIZE in WIN_SIZES:
+        for LR in LEARNING_RATE:
+            for DISCOUNT in DISCOUNTS:
+                aggr_ep_rewards = train_q_model(WIN_SIZE=WIN_SIZE,  LEARNING_RATE=LR, DISCOUNT=DISCOUNT)
+                results[(WIN_SIZE, LR, DISCOUNT)] = aggr_ep_rewards
 
-import pickle
-with open('../results.pickle', 'wb') as handle:
-    pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    import pickle
+    with open('../results.pickle', 'wb') as handle:
+        pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
