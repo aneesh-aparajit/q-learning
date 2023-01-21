@@ -16,7 +16,7 @@ optimizer = T.optim.Adam(model.parameters(), lr=3e-5)
 
 # LEARNING_RATE = 0.1
 # DISCOUNT = 0.95
-EPISODES = 5000
+EPISODES = 2500
 SHOW_EVERY =  500
 
 LOW, HIGH = T.tensor(np.array([-1, -1]), requires_grad=False), T.tensor(np.array([1, 1]), requires_grad=False)
